@@ -53,3 +53,4 @@ thrift.transport.TTransport.TTransportException: Bad status: 3 (b'Unsupporte
                         port=10000,
                         auth='KERBEROS',
                         kerberos_service_name='hive')
+
