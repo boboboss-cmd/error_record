@@ -1,0 +1,55 @@
+1.yum问题
+sudo vim /bin/yum
+将 #!/usr/bin/python 改为 #!/usr/bin/python2.7
+
+sudo vim /usr/libexec/urlgrabber-ext-down
+将 #!/usr/bin/python 改为 #!/usr/bin/python2.7
+
+2.linux配置文件路径
+/etc/profile: 全局配置文件
+/etc/bashrc: Bash shell的全局配置文件
+~/.bashrc:当前用户的Bash shell配置文件
+~/.profile: 用户通用的配置文件
+
+3. tail查看文件
+tail -n 显示指定的后多少行
+tail -f 实时更新文件内容
+tail --line-buffered 多进程同时写入时，已完整行为单位显示，避免混乱
+
+4. centos7 python2.7 pip未安装问题
+解决方法：
+sudo yum install epel-release
+sudo yum install python-pip    # 对应 Python 2.x 版本
+sudo yum install python3-pip   # 对应 Python 3.x 版本
+
+根据系统需求升级pip版本：sudo pip install --upgrade pip==20.3.4
+
+
+5.halcon问题：OSError: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by libhalcon.so.21.11.0)
+解决方法：
+（1）查看含有的版本
+strings /usr/lib64/libstdc++.so.6 |grep GLIBCXX*
+（2）查看本地的所有libstdc++.so.6
+ find / -name libstdc++.so.6*
+（3）有两种方式，一是采用export注册临时的环境变量，二是修改软链接
+export LD_LIBRARY_PATH=/root/anaconda3/lib:$LD_LIBRARY_PATH
+
+export LD_LIBRARY_PATH=/home/bduser/halcon/lib/x64-linux:$LD_LIBRARY_PATH
+
+ls -l /usr/lib64/libstdc++.so*
+cp /root/anaconda3/envs/faceswap/lib/libstdc++.so.6.0.31  /usr/lib64/
+ln -sf /usr/lib64/libstdc++.so.6.0.31 /usr/lib64/libstdc++.so.6
+
+6. so文件反编译
+nm -D libhalconc.so
+
+7.python连接带有kerberos验证的hive问题：
+错误日志：
+File "/home/bduser/chulan/anaconda3/lib/python3.9/site-packages/thrift_sasl/__init__.py", line 95, in open raise TTransportException(type=TTransportException.NOT_OPEN,
+thrift.transport.TTransport.TTransportException: Bad status: 3 (b'Unsupported mechanism  type PLAIN')
+解决方法：
+① 终端运行：kinit -kt /etc/hadoop/conf/hive.keytab  hive/hadoop114
+② 修改连接代码：conn = hive.connect(host='hadoop114',
+                        port=10000,
+                        auth='KERBEROS',
+                        kerberos_service_name='hive')
